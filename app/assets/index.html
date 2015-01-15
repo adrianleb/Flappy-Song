@@ -7,10 +7,26 @@
   <title>Brunch example application</title>
   <meta name="viewport" content="width=device-width">
   <link rel="stylesheet" href="/stylesheets/app.css">
-  <script src="/javascripts/vendor.js"></script>
-  <script src="/javascripts/app.js"></script>
+
 </head>
 <body>
-<h1>Hello World</h1>
+	
+
+	<section id="intro" class="screen intro-screen visible-screen">
+		<div class="centered-content">
+			
+			<h1>Input an Url from Soundcloud to begin</h1>
+			<form action="">
+				<input type="text">
+				<button>Play</button>
+			</form>
+		</div>
+
+	</section>
+	<section id="game" class="screen game-screen"></section>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+  <script src="/javascripts/vendor.js"></script>
+  <script src="/javascripts/app.js"></script>
+	<!-- <section></section> -->
 </body>
 </html>
