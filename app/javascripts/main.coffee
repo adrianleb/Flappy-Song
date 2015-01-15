@@ -10,7 +10,7 @@ window.nop = (e) ->
 
 
 # how much should the path move at every tick?
-window.PATHXOFFSET = -3.15
+window.PATHXOFFSET = -3.3
 
 window.BIRDYOFFSET = -10
 window.BIRDGRAVITY = 1
@@ -47,15 +47,13 @@ class DrawingCanvas
 
 
 
-  drawNewPoint: ->
-    currentLoudnessPercentage = @parent.player.getCurrentLoudnessPercentage()
+  drawNewPoint: (currentLoudnessPercentage) ->
     point = new paper.Point @xPos, @TOTALHEIGHT - (@TOTALHEIGHT * currentLoudnessPercentage)
     @path.add point
     paper.view.draw()
 
 
-  drawNewPipe: ->
-    currentLoudnessPercentage = @parent.player.getCurrentLoudnessPercentage()
+  drawNewPipe: (currentLoudnessPercentage) ->
     @pipes.push new Pipe(@xPos, @TOTALHEIGHT - (@TOTALHEIGHT * currentLoudnessPercentage), 20, window.PIPESPACING, @TOTALHEIGHT, @gameEl)
 
   updatePipes: ->
@@ -150,7 +148,7 @@ class FlappyMusic
     @runRenderer = true
     @initEvents()
     @ticker = 0
-    @_startGameWithTrack("https://soundcloud.com/hnny/1200yummy")
+    @_startGameWithTrack("https://soundcloud.com/money3152000/family-guy-bird-is-the-word")
 
   initEvents: ->
     $('[data-startWithTrack]').on 'click', (e) =>
@@ -196,19 +194,15 @@ class FlappyMusic
 
 
       if @ticker % (window.MAXTICKERS / 10) is 0
-        @drawingCanvas.drawNewPoint()
+        currentLoudnessPercentage = @player.getCurrentLoudnessPercentage()
+
+        @drawingCanvas.drawNewPoint(currentLoudnessPercentage)
 
 
-      if @ticker % window.MAXTICKERS is 0
-        @drawingCanvas.drawNewPipe()
+        if @ticker % window.MAXTICKERS is 0
+          @drawingCanvas.drawNewPipe(currentLoudnessPercentage)
 
 
-
-
-      # if @ticker % 10 is 0
-        # @game.gravity.
-          # for pipe in @pipes
-      # pipe.move(@speed)
 
       @bird.update(@drawingCanvas.TOTALHEIGHT)
       @ticker = (@ticker + 1)
