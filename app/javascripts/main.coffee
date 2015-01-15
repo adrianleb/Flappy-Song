@@ -43,7 +43,7 @@ class DrawingCanvas
   drawNewPoint: ->
     currentLoudnessPercentage = @parent.player.getCurrentLoudness() / 100
     console.log (@yPos * currentLoudnessPercentage)
-    point = new paper.Point @xPos, (@TOTALHEIGHT - (@yPos * currentLoudnessPercentage))
+    point = new paper.Point @xPos, (@TOTALHEIGHT - (@TOTALHEIGHT * currentLoudnessPercentage))
     @path.add point
     @path.smooth()
     paper.view.draw()

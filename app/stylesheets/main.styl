@@ -69,7 +69,12 @@ html, body {
 .visible-screen {
   opacity 1
   pointer-events auto
+  z-index 2
   
+}
+
+.intro-screen {
+  top 20rem
 }
 .centered-content
   text-align center
@@ -101,12 +106,13 @@ canvas
 
 .ceiling
   position: absolute
-  top: -16px
+  // top: -16px
   height: 16px
   width: 100%
   background-image: url('../images/ceiling.png')
   background-repeat: repeat-x
   -webkit-animation: animCeiling 481ms linear infinite
+  z-index 2
    // animation: animCeiling 481ms linear infinite;
 
 .floor
