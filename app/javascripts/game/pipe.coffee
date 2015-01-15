@@ -12,3 +12,9 @@ class Pipe extends Movable
   lowerBound: -> @center - @space / 2
   upperBound: -> @center + @space / 2
   rightBound: -> @x + @width
+
+
+class PipeFactory
+  constructor: (@width, @space) ->
+  getPipe: (x, center) ->
+    new Pipe(x, center, @width, @space)
