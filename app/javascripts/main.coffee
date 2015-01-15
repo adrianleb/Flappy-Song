@@ -8,13 +8,69 @@ window.nop = (e) ->
 
 
 
+
+
+class DrawingCanvas
+
+  constructor: (parent) ->
+    @parent = parent
+    console.log 'hello canvas'
+    @initPath()
+    @runRenderer = true
+
+  initPath: ->
+    @$canvas = $('#drawingCanvas')
+    paper.setup @$canvas[0]
+
+    @bg = new paper.Path.Rectangle(paper.view.bounds)
+    # @raster = new paper.Raster("/welcome/image?url=" + "https://d9lo87zaly9wg.cloudfront.net/tracks/d9446fe21200f62d217c8e6670f1deb1/medium.jpg")
+
+
+    @bg.fillColor = 'white'
+    @path = new paper.Path()
+    @path.closed = false
+    @path.strokeColor = 'black'
+    @path.strokeWidth = 1
+    @TOTALWIDTH = paper.view.size.width
+    @TOTALHEIGHT = paper.view.size.height
+    @xPos = (@TOTALWIDTH/2)
+    @yPos = (@TOTALHEIGHT/2)
+    paper.view.draw()
+    # @render()
+
+
+
+
+  drawNewPoint: ->
+    currentLoudnessPercentage = @parent.player.getCurrentLoudness() / 100
+    point = new paper.Point @xPos, (@yPos * currentLoudnessPercentage)
+    @path.add point
+    paper.view.draw()
+
+
+  updatePoints: ->
+
+
+    for point in @path.segments
+      console.log point.point.x
+      thisX = point.point.x
+
+      point.point.x = point.point.x - 0.4
+      console.log thisX
+      # point.x = newX
+
+    @drawNewPoint()
+    paper.view.draw()
+
+
+
+
 class Player
+
   constructor: ->
     @setupWebAudio()
     @playing = false
     @trackUrl = @streamUrl = null
-
-
 
   setupWebAudio: ->
     window.AudioContext = window.AudioContext || window.webkitAudioContext
@@ -25,7 +81,7 @@ class Player
     @analyser.connect(@context.destination)
 
 
-  initWithSoundcloudUrl: (url) ->
+  initWithSoundcloudUrl: (url, callback) ->
     @trackUrl = url
     @_resolveSoundcloud @trackUrl, (success, streamUrl) =>
       if success
@@ -33,9 +89,9 @@ class Player
         @renderPlayer(true)
         console.log @streamUrl, streamUrl
 
+        callback true
       else
         console.log 'COMPUTER SAYS NO'
-
 
 
   getCurrentLoudness: ->
@@ -47,13 +103,15 @@ class Player
       average += parseFloat(array[i])
       i++
     average = average / array.length
-    console.log average
+    return average
+
 
 
   renderPlayer: (playing) ->
     # console.log 
     el = "<audio id='playerElement' preload='none' autoplay='true' src='#{@streamUrl}' ></audio>"
     @playerElement = $(el).appendTo('body')[0]
+
     # wait a bit so things work smoothly
     setTimeout (=>        
         @source = @context.createMediaElementSource(@playerElement)
@@ -82,6 +140,8 @@ class FlappyMusic
 
   constructor: ->
     @player = new Player()
+    @drawingCanvas = new DrawingCanvas(@)
+    @runRenderer = true
     @initEvents()
 
   initEvents: ->
@@ -95,12 +155,19 @@ class FlappyMusic
   _startGameWithTrack: (trackUrl) ->
     $('.game-screen').addClass('visible-screen')
     $('.intro-screen').removeClass('visible-screen')
-    @player.initWithSoundcloudUrl trackUrl, (trackSucceded)->
+    @player.initWithSoundcloudUrl trackUrl, (trackSucceded) =>
       if trackSucceded
-        console.log 'track started, game starting now'
+        @render()
         # start playing game, the track has begun playing
 
 
+
+  render: =>
+    if @runRenderer
+      window.requestAnimationFrame @render
+      @player.analyser.getByteFrequencyData(@freqByteData)  # this gives us the frequency
+      @drawingCanvas.updatePoints()
+      console.log 'lol'
     #lets figure out the stream based on the soundcloud track url
     # start palyig game
     #start playing track
