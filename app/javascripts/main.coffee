@@ -8,6 +8,9 @@ window.nop = (e) ->
 
 
 
+# how much should the path move at every tick?
+window.PATHXOFFSET = -25
+
 
 
 class DrawingCanvas
@@ -41,9 +44,9 @@ class DrawingCanvas
 
 
   drawNewPoint: ->
-    currentLoudnessPercentage = @parent.player.getCurrentLoudness() / 100
-    console.log (@yPos * currentLoudnessPercentage)
-    point = new paper.Point @xPos, (@TOTALHEIGHT - (@TOTALHEIGHT * currentLoudnessPercentage))
+    currentLoudnessPercentage =1-  @parent.player.getCurrentLoudness() / @parent.player.analyser.frequencyBinCount
+    console.log currentLoudnessPercentage
+    point = new paper.Point @xPos, (@TOTALHEIGHT * currentLoudnessPercentage)
     @path.add point
     @path.smooth()
     paper.view.draw()
@@ -54,7 +57,7 @@ class DrawingCanvas
 
     for point in @path.segments
       thisX = point.point.x
-      point.point.x = point.point.x - 0.4
+      point.point.x = point.point.x + window.PATHXOFFSET
       # point.x = newX
 
     # @drawNewPoint()
@@ -172,7 +175,7 @@ class FlappyMusic
 
       if @ticker % 10 is 0
         @drawingCanvas.drawNewPoint()
-        console.log "% 2 on ticker"
+        # console.log "% 2 on ticker"
 
       # if @ticker % 100 is 0
       #   @drawingCanvas.drawNewPoint()
@@ -180,7 +183,7 @@ class FlappyMusic
 
 
 
-      console.log 'lol', @ticker
+      # console.log 'lol', @ticker
     #lets figure out the stream based on the soundcloud track url
     # start palyig game
     #start playing track
