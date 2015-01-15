@@ -10,6 +10,10 @@ class Game
   ) ->
     @pipes = []
     @gravity.add(@bird)
+    @ticks = 0
+
+  jump: () ->
+    @bird.setSpeed(-20)
 
   addPipe: (percentage) ->
     @pipes.push(@pipeFactory.getPipe(
@@ -21,6 +25,9 @@ class Game
     for pipe in @pipes
       pipe.move(@speed)
 
-    @gravity.tick()
-    @bird.fall()
+    if (@ticks % 10 == 0)
+      @gravity.tick()
+      @bird.fall()
+
+    @ticks++
     @graphics.renderBird(@bird)

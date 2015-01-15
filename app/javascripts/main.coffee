@@ -153,7 +153,9 @@ class FlappyMusic
       trackUrl = $('#trackUrlField').val()
       @_startGameWithTrack(trackUrl)
 
-
+    $(document).on 'keydown', (e) =>
+      if e.keyCode is 32
+        @game.jump()
 
   _startGameWithTrack: (trackUrl) ->
     $('.game-screen').addClass('visible-screen')
@@ -167,7 +169,7 @@ class FlappyMusic
   startGame: () ->
     width = @drawingCanvas.TOTALWIDTH
     height = @drawingCanvas.TOTALHEIGHT
-    gravity = new Gravity(2)
+    gravity = new Gravity(1)
     bird = new Bird(20, height / 2, 34, 24)
     pipeFactory = new PipeFactory(20, 20)
     graphics = new Graphics($('.bird')[0])
