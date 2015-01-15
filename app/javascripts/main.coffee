@@ -14,7 +14,6 @@ class DrawingCanvas
 
   constructor: (parent) ->
     @parent = parent
-    console.log 'hello canvas'
     @initPath()
     @runRenderer = true
 
@@ -22,18 +21,18 @@ class DrawingCanvas
     @$canvas = $('#drawingCanvas')
     paper.setup @$canvas[0]
 
-    @bg = new paper.Path.Rectangle(paper.view.bounds)
+    # @bg = new paper.Path.Rectangle(paper.view.bounds)
     # @raster = new paper.Raster("/welcome/image?url=" + "https://d9lo87zaly9wg.cloudfront.net/tracks/d9446fe21200f62d217c8e6670f1deb1/medium.jpg")
 
 
-    @bg.fillColor = 'white'
+    # @bg.fillColor = 'white'
     @path = new paper.Path()
     @path.closed = false
     @path.strokeColor = 'black'
     @path.strokeWidth = 1
     @TOTALWIDTH = paper.view.size.width
     @TOTALHEIGHT = paper.view.size.height
-    @xPos = (@TOTALWIDTH/2)
+    @xPos = (@TOTALWIDTH/1.1)
     @yPos = (@TOTALHEIGHT/2)
     paper.view.draw()
     # @render()
@@ -43,8 +42,10 @@ class DrawingCanvas
 
   drawNewPoint: ->
     currentLoudnessPercentage = @parent.player.getCurrentLoudness() / 100
-    point = new paper.Point @xPos, (@yPos * currentLoudnessPercentage)
+    console.log (@yPos * currentLoudnessPercentage)
+    point = new paper.Point @xPos, (@TOTALHEIGHT - (@yPos * currentLoudnessPercentage))
     @path.add point
+    @path.smooth()
     paper.view.draw()
 
 
@@ -52,14 +53,11 @@ class DrawingCanvas
 
 
     for point in @path.segments
-      console.log point.point.x
       thisX = point.point.x
-
       point.point.x = point.point.x - 0.4
-      console.log thisX
       # point.x = newX
 
-    @drawNewPoint()
+    # @drawNewPoint()
     paper.view.draw()
 
 
@@ -87,7 +85,6 @@ class Player
       if success
         @streamUrl = streamUrl
         @renderPlayer(true)
-        console.log @streamUrl, streamUrl
 
         callback true
       else
@@ -143,6 +140,7 @@ class FlappyMusic
     @drawingCanvas = new DrawingCanvas(@)
     @runRenderer = true
     @initEvents()
+    @ticker = 0
 
   initEvents: ->
     $('[data-startWithTrack]').on 'click', (e) =>
@@ -164,10 +162,25 @@ class FlappyMusic
 
   render: =>
     if @runRenderer
+
+      if @ticker is 101 then @ticker = 0 else @ticker = (@ticker + 1)
       window.requestAnimationFrame @render
+
       @player.analyser.getByteFrequencyData(@freqByteData)  # this gives us the frequency
       @drawingCanvas.updatePoints()
-      console.log 'lol'
+
+
+      if @ticker % 10 is 0
+        @drawingCanvas.drawNewPoint()
+        console.log "% 2 on ticker"
+
+      # if @ticker % 100 is 0
+      #   @drawingCanvas.drawNewPoint()
+      #   console.log "% 2 on ticker"
+
+
+
+      console.log 'lol', @ticker
     #lets figure out the stream based on the soundcloud track url
     # start palyig game
     #start playing track

@@ -1,37 +1,90 @@
 @import "_normalize"
-body
-  background-color darken(white, 20%)
-  
-
 
 *, *:before, *:after {
 
-	box-sizing: border-box
-	position relative
+  box-sizing: border-box
+  position relative
+  user-select: none
+}
+
+
+@keyframes animBird {
+   from { background-position: 0px 0px; }
+   to { background-position: 0px -96px; }
+}
+@keyframes animLand {
+   0% { background-position: 0px 0px; }
+   100% { background-position: -335px 0px; }
+}
+@keyframes animSky {
+   0% { background-position: 0px 100%; }
+   100% { background-position: -275px 100%; }
+}
+@keyframes animCeiling {
+   0% { background-position: 0px 0px; }
+   100% { background-position: -63px 0px; }
+}
+
+
+html
+  font-size 62.5%
+
+body
+  font-size 1.6rem
+  background-color #4ec0ca
+
+
+
+
+html, body {
+  height 100%
+  overflow hidden
+  
+}
+
+
+.screen {
+  // opacity 0
+  pointer-events none
+  width 100%
+  height 100%
+  // background-color red
+  overflow hidden
+  display block
+  position absolute
+  top 0
+  left 0
+  bottom 0
+  right 0
+  
+  transition all 0.2s ease-in-out
 }
 
 
 
-html
-	font-size 62.5%
+// .game-screen {
+//  background-color green
+// }
 
-body
-	font-size 1.6rem
-
-
+.visible-screen {
+  opacity 1
+  pointer-events auto
+  
+}
+.centered-content
+  text-align center
+  
+  max-width 48rem
+  margin 0 auto
+  height 30rem
+  // background-color blue
+    
 
 
 canvas
   position absolute
   display block
   top 0
-  // transform:translate3d(0, 0, 0); 
-  // perspective: 1000;
-  // backface-visibility: hidden; 
-  // transition all 0.15s ease-in-out
-  // filter blur(0px)
-
-
   left 0
   width 100%
   height 100% !important
@@ -39,38 +92,53 @@ canvas
   // background-color transparent
   
 
-.screen {
-	opacity 0
-	pointer-events none
-	width 100%
-	height 100vh
-	// background-color red
-	overflow hidden
-	display block
-	position absolute
-	top 0
-	left 0
-	bottom 0
-	right 0
-	
-	transition all 0.2s ease-in-out
-}
+
+.drawed-objects
+  position absolute
+  display block
+  
 
 
+.ceiling
+  position: absolute
+  top: -16px
+  height: 16px
+  width: 100%
+  background-image: url('../images/ceiling.png')
+  background-repeat: repeat-x
+  -webkit-animation: animCeiling 481ms linear infinite
+   // animation: animCeiling 481ms linear infinite;
 
-.game-screen {
-	background-color green
-}
+.floor
+   position: absolute;
+   bottom: 0;
+   width: 100%;
+   height: 20%;
+   background-image: url('../images/land.png');
+   background-repeat: repeat-x;
+   background-position: 0px 0px;
+   background-color: #ded895;
+   -webkit-animation: animLand 2516ms linear infinite;
+   
 
-.visible-screen {
-	opacity 1
-	pointer-events auto
-	
-}
-.centered-content
-	text-align center
-	
-	max-width 48rem
-	margin 0 auto
-	height 30rem
-	background-color blue
+.bird
+  left 2rem
+  top: 50%
+  width 3.4rem
+  height 2.4rem
+  // background-color green
+  position: absolute
+  background-image: url('../images/bird.png')
+  -webkit-animation: animBird 300ms steps(4) infinite
+
+
+.sky
+  width 100%
+  height 80%
+  background-color green
+  top 0
+  background-image: url('../images/sky.png');
+  background-repeat: repeat-x;
+  background-position: 0px 100%;
+  background-color: #4ec0ca;   
+  -webkit-animation: animSky 7s linear infinite;
