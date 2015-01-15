@@ -2,7 +2,7 @@ class Bird
   constructor: (@x, @y, @width, @height) ->
     @speed = 0
   fall: () ->
-    @y -= @speed
+    @y = Math.max(@y - @speed, 0)
   setSpeed: (@speed) ->
   getX: -> @x
   getY: -> @y

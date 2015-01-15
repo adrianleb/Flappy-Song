@@ -14,6 +14,11 @@ describe 'Flappy bird', () ->
     bird.fall()
     expect(bird.y).toBe(0)
 
+  it 'does not fall lower than 0', () ->
+    bird.setSpeed 30
+    bird.fall()
+    expect(bird.y).toBe(0)
+
   it 'has a hitbox', () ->
     expect(bird.getX()).toBe(0)
     expect(bird.getY()).toBe(15)
