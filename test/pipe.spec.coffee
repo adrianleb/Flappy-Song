@@ -1,16 +1,18 @@
 describe 'pipes', () ->
 
   pipe = {}
-  movable = {}
 
   beforeEach () ->
-    movable = new Movable(15, 1)
-    pipe = new Pipe(movable, 15, 2, 4)
+    pipe = new Pipe(15, 15, 2, 4)
 
-  it 'moves', () ->
-    spyMovable = spyOn(movable, 'move')
+  it 'is movable with speed 1', () ->
     pipe.move(15)
-    expect(spyMovable).toHaveBeenCalledWith(15)
+    expect(pipe.x).toBe(0)
+
+  it 'calculate hits', () ->
+    expect(pipe.hit(mockHittable(2, 0, 3, 0))).toBe(false)
+    expect(pipe.hit(mockHittable(13, 11, 15, 13))).toBe(true)
+    expect(pipe.hit(mockHittable(13, 14, 15, 16))).toBe(false)
 
   mockHittable = (x, y, right, top) ->
     return {
@@ -19,8 +21,3 @@ describe 'pipes', () ->
       rightBound: -> right
       upperBound: -> top
     }
-
-  it 'calculate hits', () ->
-    expect(pipe.hit(mockHittable(2, 0, 3, 0))).toBe(false)
-    expect(pipe.hit(mockHittable(13, 11, 15, 13))).toBe(true)
-    expect(pipe.hit(mockHittable(13, 14, 15, 16))).toBe(false)

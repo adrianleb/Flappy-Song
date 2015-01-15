@@ -1,12 +1,10 @@
-class Pipe
-  constructor: (@movable, @center, @width, @space) ->
-
-  move: (dX) ->
-    @movable.move(dX)
+class Pipe extends Movable
+  constructor: (@x, @center, @width, @space) ->
+    super(@x, 1)
 
   hit: (object) ->
     return false if object.getX() > @rightBound && object.rightBound() > @rightBound
-    return false if object.getX() < @movable.x && object.rightBound() < @movable.x
+    return false if object.getX() < @x && object.rightBound() < @x
     return false if object.getY() > @lowerBound() && object.upperBound() < @upperBound()
 
     true
