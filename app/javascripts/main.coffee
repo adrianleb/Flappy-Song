@@ -9,7 +9,7 @@ window.nop = (e) ->
 
 
 # how much should the path move at every tick?
-window.PATHXOFFSET = -25
+window.PATHXOFFSET = -10
 
 
 
@@ -23,11 +23,6 @@ class DrawingCanvas
   initPath: ->
     @$canvas = $('#drawingCanvas')
     paper.setup @$canvas[0]
-
-    # @bg = new paper.Path.Rectangle(paper.view.bounds)
-    # @raster = new paper.Raster("/welcome/image?url=" + "https://d9lo87zaly9wg.cloudfront.net/tracks/d9446fe21200f62d217c8e6670f1deb1/medium.jpg")
-
-
     # @bg.fillColor = 'white'
     @path = new paper.Path()
     @path.closed = false
@@ -44,9 +39,11 @@ class DrawingCanvas
 
 
   drawNewPoint: ->
-    currentLoudnessPercentage =1-  @parent.player.getCurrentLoudness() / @parent.player.analyser.frequencyBinCount
-    console.log currentLoudnessPercentage
-    point = new paper.Point @xPos, (@TOTALHEIGHT * currentLoudnessPercentage)
+
+ 
+    currentLoudnessPercentage = @parent.player.getCurrentLoudnessPercentage()
+    # INVERT DAT VAL
+    point = new paper.Point @xPos, @TOTALHEIGHT - (@TOTALHEIGHT * currentLoudnessPercentage)
     @path.add point
     @path.smooth()
     paper.view.draw()
@@ -94,16 +91,21 @@ class Player
         console.log 'COMPUTER SAYS NO'
 
 
-  getCurrentLoudness: ->
+  getCurrentLoudnessPercentage: ->
     array = new Uint8Array(@analyser.frequencyBinCount)
     @analyser.getByteFrequencyData array
     average = 0
     i = 0
     while i < array.length
       average += parseFloat(array[i])
+      # console.log parseFloat(array[i])
       i++
-    average = average / array.length
-    return average
+
+
+    # console.log "-------------------------------------------"
+    newAverage = average / array.length
+    # console.log average, newAverage, @analyser.frequencyBinCount, 
+    return (newAverage / 200)
 
 
 
@@ -173,7 +175,7 @@ class FlappyMusic
       @drawingCanvas.updatePoints()
 
 
-      if @ticker % 10 is 0
+      if @ticker % 3 is 0
         @drawingCanvas.drawNewPoint()
         # console.log "% 2 on ticker"
 
