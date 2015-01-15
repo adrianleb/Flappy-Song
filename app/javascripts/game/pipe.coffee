@@ -1,6 +1,18 @@
 class Pipe extends Movable
-  constructor: (@x, @center, @width, @space) ->
-    super(@x, 1)
+  constructor: (@x, @center, @width, @space, @worldHeight, @gameEl) ->
+    lowerPipeHeight = @worldHeight - (@center + @space / 2)
+   
+
+    tmpl = "<div class='drawed-objects pipe' style='left:#{@x}px;'>
+          <div class='pipe-upper' style='top: 0; height:#{@center - @space / 2}px;'></div>
+          <div class='pipe-lower' style='top: #{@center + @space / 2}px; height:#{lowerPipeHeight};'></div>
+        </div>"
+
+
+
+    @pipeEl = $(tmpl).appendTo(@gameEl)[0]
+
+
 
   hit: (object) ->
     return false if object.getX() > @rightBound() && object.rightBound() > @rightBound()
@@ -9,9 +21,18 @@ class Pipe extends Movable
 
     true
 
-  lowerBound: -> @center - @space / 2
+  topPipeHeight: -> @center - @space / 2
+
+
   upperBound: -> @center + @space / 2
+
   rightBound: -> @x + @width
+
+  move: (offset) ->
+
+    @x = @x + offset
+    @pipeEl.style.left = "#{@x}px"
+
 
 
 class PipeFactory

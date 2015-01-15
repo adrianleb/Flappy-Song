@@ -20,7 +20,9 @@ class DrawingCanvas
   constructor: (parent) ->
     @parent = parent
     @initPath()
+    @pipes = []
     @runRenderer = true
+    @gameEl = $('#game')
 
   initPath: ->
     @$canvas = $('#drawingCanvas')
@@ -40,9 +42,8 @@ class DrawingCanvas
 
 
 
-  drawNewPoint: ->
 
- 
+  drawNewPoint: ->
     currentLoudnessPercentage = @parent.player.getCurrentLoudnessPercentage()
     # INVERT DAT VAL
     point = new paper.Point @xPos, @TOTALHEIGHT - (@TOTALHEIGHT * currentLoudnessPercentage)
@@ -51,15 +52,21 @@ class DrawingCanvas
     paper.view.draw()
 
 
+
+  drawNewPipe: ->
+    console.log 'twicce'
+    currentLoudnessPercentage = @parent.player.getCurrentLoudnessPercentage()
+    @pipes.push new Pipe(@xPos, @TOTALHEIGHT - (@TOTALHEIGHT * currentLoudnessPercentage), 20, 40, @TOTALHEIGHT, @gameEl)
+    console.log 'he;lo', @pipes.length
+
+  updatePipes: ->
+    for pipe in @pipes
+      pipe.move(window.PATHXOFFSET)
+
   updatePoints: ->
-
-
     for point in @path.segments
       thisX = point.point.x
       point.point.x = point.point.x + window.PATHXOFFSET
-      # point.x = newX
-
-    # @drawNewPoint()
     paper.view.draw()
 
 
@@ -90,7 +97,7 @@ class Player
 
         callback true
       else
-        console.log 'COMPUTER SAYS NO'
+        console.log 'computer says no'
 
 
   getCurrentLoudnessPercentage: ->
@@ -100,19 +107,15 @@ class Player
     i = 0
     while i < array.length
       average += parseFloat(array[i])
-      # console.log parseFloat(array[i])
       i++
 
 
-    # console.log "-------------------------------------------"
     newAverage = average / array.length
-    # console.log average, newAverage, @analyser.frequencyBinCount, 
     return (newAverage / 200)
 
 
 
   renderPlayer: (playing) ->
-    # console.log 
     el = "<audio id='playerElement' preload='none' autoplay='true' src='#{@streamUrl}' ></audio>"
     @playerElement = $(el).appendTo('body')[0]
 
@@ -176,25 +179,33 @@ class FlappyMusic
     height = @drawingCanvas.TOTALHEIGHT
     gravity = new Gravity(1)
     @bird = new Bird(20, height / 2, 34, 24, $('.bird')[0], 3)
-    pipeFactory = new PipeFactory(20, 20)
-    # graphics = new Graphics($('.bird')[0])
-    # @game = new Game(width, height, gravity, 20, pipeFactory, bird, graphics)
-# 
+
 
   render: =>
     if @runRenderer
 
       # @game.tick()
 
-      if @ticker is 101 then @ticker = 0 else @ticker = (@ticker + 1)
+      if @ticker is 30 then @ticker = 0 
+
       window.requestAnimationFrame @render
 
       @player.analyser.getByteFrequencyData(@freqByteData)  # this gives us the frequency
       @drawingCanvas.updatePoints()
+      @drawingCanvas.updatePipes()
+
 
 
       if @ticker % 3 is 0
         @drawingCanvas.drawNewPoint()
+
+
+      console.log(@ticker % 90 is 0)
+
+
+      if @ticker % 30 is 0
+        @drawingCanvas.drawNewPipe()
+
 
 
 
@@ -202,29 +213,10 @@ class FlappyMusic
         # @game.gravity.
           # for pipe in @pipes
       # pipe.move(@speed)
-    # if (@ticks % 10 == 0)
-    # @gravity.tick()
-      # @bird.fall()
 
       @bird.update(@drawingCanvas.TOTALHEIGHT)
+      @ticker = (@ticker + 1)
 
-
-    # @game.graphics.renderBird(@bird)
-
-
-
-        # console.log "% 2 on ticker"
-
-      # if @ticker % 100 is 0
-      #   @drawingCanvas.drawNewPoint()
-      #   console.log "% 2 on ticker"
-
-
-
-      # console.log 'lol', @ticker
-    #lets figure out the stream based on the soundcloud track url
-    # start palyig game
-    #start playing track
 
 
 
