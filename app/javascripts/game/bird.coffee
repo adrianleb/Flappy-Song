@@ -1,6 +1,7 @@
 class Bird
   constructor: (@x, @y, @width, @height, @birdEl, @gravity) ->
     @speed = 0
+    @birdEl.style.left = "#{@x}px"
   fall: () ->
     @y = Math.max(@y - @speed, 0)
     console.log @speed, @y, "falling"

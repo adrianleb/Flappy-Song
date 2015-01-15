@@ -1,4 +1,5 @@
-window._SCCK = 'b01d75711c9e6a94ae1c38f2b9650b1c'
+# window._SCCK = 'b01d75711c9e6a94ae1c38f2b9650b1c'
+window._SCCK = "8e02b0157f78d50db5298810ca490d0f"
 # nop
 # -----
 # nop e = e.preventDefault()
@@ -9,11 +10,14 @@ window.nop = (e) ->
 
 
 # how much should the path move at every tick?
-window.PATHXOFFSET = -10
+window.PATHXOFFSET = -3.15
 
-window.BIRDYOFFSET = -30
+window.BIRDYOFFSET = -10
+window.BIRDGRAVITY = 1
 
+window.MAXTICKERS = 100
 
+window.PIPESPACING = 100
 
 class DrawingCanvas
 
@@ -45,19 +49,14 @@ class DrawingCanvas
 
   drawNewPoint: ->
     currentLoudnessPercentage = @parent.player.getCurrentLoudnessPercentage()
-    # INVERT DAT VAL
     point = new paper.Point @xPos, @TOTALHEIGHT - (@TOTALHEIGHT * currentLoudnessPercentage)
     @path.add point
-    @path.smooth()
     paper.view.draw()
 
 
-
   drawNewPipe: ->
-    console.log 'twicce'
     currentLoudnessPercentage = @parent.player.getCurrentLoudnessPercentage()
-    @pipes.push new Pipe(@xPos, @TOTALHEIGHT - (@TOTALHEIGHT * currentLoudnessPercentage), 20, 40, @TOTALHEIGHT, @gameEl)
-    console.log 'he;lo', @pipes.length
+    @pipes.push new Pipe(@xPos, @TOTALHEIGHT - (@TOTALHEIGHT * currentLoudnessPercentage), 20, window.PIPESPACING, @TOTALHEIGHT, @gameEl)
 
   updatePipes: ->
     for pipe in @pipes
@@ -178,7 +177,7 @@ class FlappyMusic
     width = @drawingCanvas.TOTALWIDTH
     height = @drawingCanvas.TOTALHEIGHT
     gravity = new Gravity(1)
-    @bird = new Bird(20, height / 2, 34, 24, $('.bird')[0], 3)
+    @bird = new Bird(60, height / 2, 34, 24, $('.bird')[0], window.BIRDGRAVITY)
 
 
   render: =>
@@ -186,7 +185,7 @@ class FlappyMusic
 
       # @game.tick()
 
-      if @ticker is 30 then @ticker = 0 
+      if @ticker is window.MAXTICKERS then @ticker = 0 
 
       window.requestAnimationFrame @render
 
@@ -196,14 +195,11 @@ class FlappyMusic
 
 
 
-      if @ticker % 3 is 0
+      if @ticker % (window.MAXTICKERS / 10) is 0
         @drawingCanvas.drawNewPoint()
 
 
-      console.log(@ticker % 90 is 0)
-
-
-      if @ticker % 30 is 0
+      if @ticker % window.MAXTICKERS is 0
         @drawingCanvas.drawNewPipe()
 
 

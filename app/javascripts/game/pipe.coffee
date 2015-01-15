@@ -1,9 +1,10 @@
 class Pipe extends Movable
   constructor: (@x, @center, @width, @space, @worldHeight, @gameEl) ->
+    # @x = @x - @width / 2
     lowerPipeHeight = @worldHeight - (@center + @space / 2)
    
 
-    tmpl = "<div class='drawed-objects pipe' style='left:#{@x}px;'>
+    tmpl = "<div class='drawed-objects pipe' style='transform: translateX(#{@x}px);'>
           <div class='pipe-upper' style='top: 0; height:#{@center - @space / 2}px;'></div>
           <div class='pipe-lower' style='top: #{@center + @space / 2}px; height:#{lowerPipeHeight};'></div>
         </div>"
@@ -31,7 +32,8 @@ class Pipe extends Movable
   move: (offset) ->
 
     @x = @x + offset
-    @pipeEl.style.left = "#{@x}px"
+    @pipeEl.style.transform = "translateX(#{@x}px)"
+    # @pipeEl.style.left = "#{@x}px"
 
 
 
