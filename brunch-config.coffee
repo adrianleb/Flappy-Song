@@ -4,7 +4,7 @@ exports.config =
     javascripts:
       joinTo:
         'javascripts/app.js': /^app(\/|\\)(?!templates)/
-        'javascripts/vendor.js': /^(?!app)/
+        'javascripts/vendor.js': /^(?!app)(?!test)/
     stylesheets:
       joinTo: 'stylesheets/app.css'
     templates:

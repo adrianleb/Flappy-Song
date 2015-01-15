@@ -5,7 +5,8 @@ class Game
     @gravity,
     @speed,
     @pipeFactory,
-    @bird
+    @bird,
+    @graphics
   ) ->
     @pipes = []
     @gravity.add(@bird)
@@ -22,3 +23,4 @@ class Game
 
     @gravity.tick()
     @bird.fall()
+    @graphics.renderBird(@bird)

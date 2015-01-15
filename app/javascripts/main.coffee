@@ -160,13 +160,24 @@ class FlappyMusic
     $('.intro-screen').removeClass('visible-screen')
     @player.initWithSoundcloudUrl trackUrl, (trackSucceded) =>
       if trackSucceded
+        @startGame()
         @render()
         # start playing game, the track has begun playing
 
+  startGame: () ->
+    width = @drawingCanvas.TOTALWIDTH
+    height = @drawingCanvas.TOTALHEIGHT
+    gravity = new Gravity(2)
+    bird = new Bird(20, height / 2, 34, 24)
+    pipeFactory = new PipeFactory(20, 20)
+    graphics = new Graphics($('.bird')[0])
+    @game = new Game(width, height, gravity, 20, pipeFactory, bird, graphics)
 
 
   render: =>
     if @runRenderer
+
+      @game.tick()
 
       if @ticker is 101 then @ticker = 0 else @ticker = (@ticker + 1)
       window.requestAnimationFrame @render
