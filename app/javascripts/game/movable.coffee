@@ -1,5 +1,5 @@
 class Movable
-  constructor: (@x, @y, @speed) ->
+  constructor: (@x, @speed) ->
 
   move: (dX) ->
     @x -= dX * @speed
