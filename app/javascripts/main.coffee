@@ -11,6 +11,8 @@ window.nop = (e) ->
 # how much should the path move at every tick?
 window.PATHXOFFSET = -10
 
+window.BIRDYOFFSET = -30
+
 
 
 class DrawingCanvas
@@ -146,6 +148,7 @@ class FlappyMusic
     @runRenderer = true
     @initEvents()
     @ticker = 0
+    @_startGameWithTrack("https://soundcloud.com/hnny/1200yummy")
 
   initEvents: ->
     $('[data-startWithTrack]').on 'click', (e) =>
@@ -155,7 +158,9 @@ class FlappyMusic
 
     $(document).on 'keydown', (e) =>
       if e.keyCode is 32
-        @game.jump()
+        @bird.setSpeed(window.BIRDYOFFSET)
+
+        # @game.jump()
 
   _startGameWithTrack: (trackUrl) ->
     $('.game-screen').addClass('visible-screen')
@@ -170,16 +175,16 @@ class FlappyMusic
     width = @drawingCanvas.TOTALWIDTH
     height = @drawingCanvas.TOTALHEIGHT
     gravity = new Gravity(1)
-    bird = new Bird(20, height / 2, 34, 24)
+    @bird = new Bird(20, height / 2, 34, 24, $('.bird')[0], 3)
     pipeFactory = new PipeFactory(20, 20)
-    graphics = new Graphics($('.bird')[0])
-    @game = new Game(width, height, gravity, 20, pipeFactory, bird, graphics)
-
+    # graphics = new Graphics($('.bird')[0])
+    # @game = new Game(width, height, gravity, 20, pipeFactory, bird, graphics)
+# 
 
   render: =>
     if @runRenderer
 
-      @game.tick()
+      # @game.tick()
 
       if @ticker is 101 then @ticker = 0 else @ticker = (@ticker + 1)
       window.requestAnimationFrame @render
@@ -190,6 +195,24 @@ class FlappyMusic
 
       if @ticker % 3 is 0
         @drawingCanvas.drawNewPoint()
+
+
+
+      # if @ticker % 10 is 0
+        # @game.gravity.
+          # for pipe in @pipes
+      # pipe.move(@speed)
+    # if (@ticks % 10 == 0)
+    # @gravity.tick()
+      # @bird.fall()
+
+      @bird.update(@drawingCanvas.TOTALHEIGHT)
+
+
+    # @game.graphics.renderBird(@bird)
+
+
+
         # console.log "% 2 on ticker"
 
       # if @ticker % 100 is 0
