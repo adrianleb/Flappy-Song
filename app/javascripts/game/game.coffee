@@ -4,9 +4,11 @@ class Game
     @height,
     @gravity,
     @speed,
-    @pipeFactory
+    @pipeFactory,
+    @bird
   ) ->
     @pipes = []
+    @gravity.add(@bird)
 
   addPipe: (percentage) ->
     @pipes.push(@pipeFactory.getPipe(
@@ -17,3 +19,6 @@ class Game
   tick: () ->
     for pipe in @pipes
       pipe.move(@speed)
+
+    @gravity.tick()
+    @bird.fall()
