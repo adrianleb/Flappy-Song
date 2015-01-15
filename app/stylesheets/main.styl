@@ -26,12 +26,28 @@
 }
 
 
+
+@font-face {
+    font-family: 'flappyfont';
+    src: url('../fonts/04b_19__-webfont.eot');
+    src: url('../fonts/04b_19__-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/04b_19__-webfont.woff2') format('woff2'),
+         url('../fonts/04b_19__-webfont.woff') format('woff'),
+         url('../fonts/04b_19__-webfont.ttf') format('truetype'),
+         url('../fonts/04b_19__-webfont.svg#04b_19regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+
 html
   font-size 62.5%
 
 body
   font-size 1.6rem
   background-color #4ec0ca
+  font-family "flappyfont"
 
 
 
@@ -73,9 +89,34 @@ html, body {
   
 }
 
-.intro-screen {
-  top 20rem
-}
+.intro-screen 
+  top 10rem
+  
+  h1 
+    color lightgreen
+    text-shadow: -1px 0 black, 0 2px black, 2px 0 black, 0 -1px black;
+
+
+
+  input[type="text"]
+    display block
+    width 80%
+    margin 0 auto
+    border none
+    height 4.5rem
+    background-color rgba(white, 0.2)
+    border 1px solid rgba(black, 0.2)
+    border-radius 0.4rem
+    
+
+  button
+    appearance none
+    border none
+    background-color rgba(white, 0.2)
+    padding 1rem 3rem
+    margin-top 2rem
+    
+    
 .centered-content
   text-align center
   
