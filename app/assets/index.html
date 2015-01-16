@@ -50,16 +50,32 @@
     <div class="centered-content">
       <h1>Game Over</h1>
       <button data-try-again>Try Again</button>
-      <form action="">
+      <form action="" class="score-cta-form">
         <input type="text" id="bestScoreName" placeholder="Your name">
         <button data-save-best-score>Publish your score</button>
       </form>
     </div>
   </section>
+
+  <section id="gameEnded" class="screen game-ended-screen">
+    <div class="centered-content">
+      <h1>Congratulations!</h1>
+
+      <h3>You've survived the whole track, now challenge your friends to do the same!</h3>
+
+      <!-- <button data-try-again>Try Again</button> -->
+      <form action="" class="score-cta-form">
+        <input type="text" id="bestScoreName" placeholder="Your name">
+        <button data-save-best-score>Publish your score</button>
+      </form>
+    </div>
+  </section>
+
+
   <script src="https://cdn.firebase.com/js/client/2.1.1/firebase.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.9.18/paper-full.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
   <script src="/javascripts/app.js"></script>
 	<!-- <section></section> -->
-</body>
+</body!
 </html>

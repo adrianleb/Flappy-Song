@@ -41,13 +41,27 @@
 }
 
 
+@font-face {
+    font-family: 'silkscreennormal';
+    src: url('../fonts/slkscr-webfont.eot');
+    src: url('../fonts/slkscr-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../fonts/slkscr-webfont.woff') format('woff'),
+         url('../fonts/slkscr-webfont.ttf') format('truetype'),
+         url('../fonts/slkscr-webfont.svg#silkscreennormal') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+
+
 html
   font-size 62.5%
 
 body
   font-size 1.6rem
   background-color #4ec0ca
-  font-family "flappyfont"
+  font-family "silkscreennormal"
 
 
 
@@ -94,14 +108,17 @@ html, body {
 //   opacity 0
 //   pointer-events none
   
-.intro-screen, .game-over-screen
+.intro-screen
+  overflow-y auto
+.intro-screen, .game-over-screen, .game-ended-screen
   top 6rem
   z-index 3
   opacity 0
   pointer-events none
   h1 
     color lightgreen
-    
+    font-family "flappyfont"
+    letter-spacing 2px
     text-shadow: -1px 0 black, 0 2px black, 2px 0 black, 0 -1px black;
     
     margin-bottom 6rem
@@ -254,14 +271,19 @@ canvas
   position absolute
   top 2rem
   left 2rem
-  width 4rem
-  hegith 6rem
+  width auto
+  // height 6rem
   background-color rgba(white, 0.4)
   z-index 16
   border-radius 0.4rem
+  padding 0 1rem
   
   h1
     text-align center
+    font-family "flappyfont"
+    color lightgreen
+    text-shadow: -1px 0 black, 0 2px black, 2px 0 black, 0 -1px black;
+    
     
 .pause-animation
     -webkit-animation-play-state: paused; /* Chrome, Safari, Opera */
@@ -272,8 +294,15 @@ canvas
   opacity 0
   &.visible
     opacity 1
+  & > h4
+    font-family "flappyfont"
+    color lightgreen
+    letter-spacing 2px
+    text-shadow: -1px 0 black, 0 2px black, 2px 0 black, 0 -1px black;
+    
 .recently-played-tracks
   text-align left
+  margin-top 3rem
   
   &, li
     list-style none
@@ -284,7 +313,9 @@ canvas
   a
     display block
     color black
-    width 100%
+    text-align center
+    // width 100%
+    margin 0 auto
   div
     width 4.8rem
     height 4.8rem
@@ -295,8 +326,16 @@ canvas
   h4
     display inline-block
     vertical-align top
-    line-height 0.5
+    width: 60%
+    margin: 0
+    line-height: 1.5
+    text-align left
+    // color lightgreen
+    // text-shadow: -1px 0 black, 0 2px black, 2px 0 black, 0 -1px black;
+    
     
   span
     opacity 0.7
+.score-cta-form
+  margin-top 3rem
     
