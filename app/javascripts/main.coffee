@@ -67,6 +67,25 @@ class DrawingCanvas
     paper.view.draw()
 
 
+  checkCollisions: ->
+    val = false
+    for pipe in @pipes
+      if pipe.hit(@parent.bird)
+        val = true
+        console.log 'because pipe'
+
+
+    # if @parent.bird.y =< 3
+    #   console.log @parent.bird
+    #   console.log 'because drugs'
+    #   val = true
+
+
+    if val
+      # alert('game over sucker')
+      console.log('game over sucker')
+      @parent.runRenderer = false
+
 
 
 class Player
@@ -148,7 +167,7 @@ class FlappyMusic
     @runRenderer = true
     @initEvents()
     @ticker = 0
-    @_startGameWithTrack("https://soundcloud.com/money3152000/family-guy-bird-is-the-word")
+    @_startGameWithTrack("https://soundcloud.com/otgenasis/coco")
 
   initEvents: ->
     $('[data-startWithTrack]').on 'click', (e) =>
@@ -174,7 +193,6 @@ class FlappyMusic
   startGame: () ->
     width = @drawingCanvas.TOTALWIDTH
     height = @drawingCanvas.TOTALHEIGHT
-    gravity = new Gravity(1)
     @bird = new Bird(60, height / 2, 34, 24, $('.bird')[0], window.BIRDGRAVITY)
 
 
@@ -205,6 +223,9 @@ class FlappyMusic
 
 
       @bird.update(@drawingCanvas.TOTALHEIGHT)
+
+      @drawingCanvas.checkCollisions()
+
       @ticker = (@ticker + 1)
 
 

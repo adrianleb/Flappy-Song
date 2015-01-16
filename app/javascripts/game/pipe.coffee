@@ -10,17 +10,60 @@ class Pipe extends Movable
         </div>"
 
 
-
     @pipeEl = $(tmpl).appendTo(@gameEl)[0]
 
 
 
   hit: (object) ->
-    return false if object.getX() > @rightBound() && object.rightBound() > @rightBound()
-    return false if object.getX() < @x && object.rightBound() < @x
-    return false if object.getY() > @lowerBound() && object.upperBound() < @upperBound()
 
-    true
+
+    birdTop = parseInt(object.y)
+    birdBottom = parseInt(object.lowerBound())
+
+
+    birdLeftSide = object.x
+    birdRightSide = object.rightBound()
+
+
+
+    # console.log(birdRightSide, @x, @rightBound(), birdLeftSide)
+
+
+    if birdRightSide in [parseInt(@x)...parseInt(@rightBound())] or birdLeftSide in [parseInt(@x)...parseInt(@rightBound())]
+      console.log 'bird is horizontally colliding'
+
+
+      console.log(birdTop, parseInt(@topPipeHeight()), parseInt(@upperBound()), birdBottom)
+      console.log(birdTop in [parseInt(@topPipeHeight())...parseInt(@upperBound())])
+      console.log(birdBottom in [parseInt(@topPipeHeight())...parseInt(@upperBound())])
+
+      unless birdTop in [parseInt(@topPipeHeight())...parseInt(@upperBound())] or birdBottom in [parseInt(@topPipeHeight())...parseInt(@upperBound())]
+        console.log "bird collided horizontally and vertically!"
+        return true
+
+      # else
+        # addscore
+
+    return false
+
+
+    # # check if right side of bird touches left side of pipe
+
+    # # return false if 
+
+    # # console.log("test 1: ", (object.getX() > @rightBound() && object.rightBound() > @rightBound()))
+    # return false if object.getX() > @rightBound() && object.rightBound() > @rightBound()
+
+    # console.log("test 2: ", (object.getX() < @x && object.rightBound() < @x))
+
+    # return false if object.getX() < @x && object.rightBound() < @x
+
+    # console.log("test 3: ", (object.getY() > @topPipeHeight() && object.upperBound() < @upperBound()))
+
+    # return false if object.getY() > @topPipeHeight() && object.upperBound() < @upperBound()
+
+
+    # true
 
   topPipeHeight: -> @center - @space / 2
 
