@@ -232,7 +232,7 @@ class FlappyMusic
     @runRenderer = true
     @initEvents()
     @ticker = 0
-    @_startGameWithTrack("https://soundcloud.com/oshimakesmusic/i-3-u")
+    # @_startGameWithTrack("https://soundcloud.com/oshimakesmusic/i-3-u")
 
   initEvents: ->
     $('[data-startWithTrack]').on 'click', (e) =>
@@ -246,6 +246,7 @@ class FlappyMusic
 
 
   _startGameWithTrack: (trackUrl) ->
+    console.log 'started?'
     $('.game-screen').addClass('visible-screen')
     $('.intro-screen').removeClass('visible-screen')
     @player.initWithSoundcloudUrl trackUrl, (trackSucceded) =>
