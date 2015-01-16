@@ -30,19 +30,17 @@ class Pipe extends Movable
 
 
     if birdRightSide in [parseInt(@x)...parseInt(@rightBound())] or birdLeftSide in [parseInt(@x)...parseInt(@rightBound())]
-      console.log 'bird is horizontally colliding'
-
-
-      console.log(birdTop, parseInt(@topPipeHeight()), parseInt(@upperBound()), birdBottom)
-      console.log(birdTop in [parseInt(@topPipeHeight())...parseInt(@upperBound())])
-      console.log(birdBottom in [parseInt(@topPipeHeight())...parseInt(@upperBound())])
+      @counting ?= setTimeout((()->
+        console.log('will gain a point', parseInt($('#score h1').text()))
+        $('#score h1').text( parseInt($('#score h1').text()) + 1 )
+        ), 100)
 
       unless birdTop in [parseInt(@topPipeHeight())...parseInt(@upperBound())] or birdBottom in [parseInt(@topPipeHeight())...parseInt(@upperBound())]
-        console.log "bird collided horizontally and vertically!"
+        clearTimeout(@counting)
         return true
 
       # else
-        # addscore
+      #   addscore
 
     return false
 
