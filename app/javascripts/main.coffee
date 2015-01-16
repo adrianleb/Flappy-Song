@@ -20,17 +20,14 @@ window.MAXTICKERS = 100
 window.PIPESPACING = 100
 
 
-class Pipe extends Movable
+class Pipe
   constructor: (@x, @center, @width, @space, @worldHeight, @gameEl) ->
-    # @x = @x - @width / 2
     lowerPipeHeight = @worldHeight - (@center + @space / 2)
    
-
     tmpl = "<div class='drawed-objects pipe' style='transform: translateX(#{@x}px);'>
           <div class='pipe-upper' style='top: 0; height:#{@center - @space / 2}px;'></div>
           <div class='pipe-lower' style='top: #{@center + @space / 2}px; height:#{lowerPipeHeight};'></div>
         </div>"
-
 
     @pipeEl = $(tmpl).appendTo(@gameEl)[0]
 
@@ -68,23 +65,16 @@ class Pipe extends Movable
   rightBound: -> @x + @width
 
   move: (offset) ->
-
     @x = @x + offset
     @pipeEl.style.transform = "translateX(#{@x}px)"
-    # @pipeEl.style.left = "#{@x}px"
 
-
-
-class PipeFactory
-  constructor: (@width, @space) ->
-  getPipe: (x, center) ->
-    new Pipe(x, center, @width, @space)
 
 
 class Bird
   constructor: (@x, @y, @width, @height, @birdEl, @gravity) ->
     @speed = 0
     @birdEl.style.left = "#{@x}px"
+
   fall: () ->
     @y = Math.max(@y - @speed, 0)
     console.log @speed, @y, "falling"
@@ -101,9 +91,6 @@ class Bird
     @speed = @speed + @gravity
     @y = Math.max(@y + @speed, -1 * worldHeight + 40)
     @y = Math.min(@y, worldHeight)
-
-
-    # if @y > 1 then @y = 1
     @birdEl.style.transform = "translateY(#{@y}px)"
 
 
@@ -129,10 +116,6 @@ class DrawingCanvas
     @xPos = (@TOTALWIDTH/1.1)
     @yPos = (@TOTALHEIGHT/2)
     paper.view.draw()
-    # @render()
-
-
-
 
 
   drawNewPoint: (currentLoudnessPercentage) ->
@@ -144,9 +127,11 @@ class DrawingCanvas
   drawNewPipe: (currentLoudnessPercentage) ->
     @pipes.push new Pipe(@xPos, @TOTALHEIGHT - (@TOTALHEIGHT * currentLoudnessPercentage), 20, window.PIPESPACING, @TOTALHEIGHT, @gameEl)
 
+
   updatePipes: ->
     for pipe in @pipes
       pipe.move(window.PATHXOFFSET)
+
 
   updatePoints: ->
     for point in @path.segments
@@ -162,13 +147,6 @@ class DrawingCanvas
         val = true
         console.log 'because pipe'
 
-
-    # if @parent.bird.y =< 3
-    #   console.log @parent.bird
-    #   console.log 'because drugs'
-    #   val = true
-
-
     if val
       # alert('game over sucker')
       console.log('game over sucker')
@@ -182,6 +160,7 @@ class Player
     @setupWebAudio()
     @playing = false
     @trackUrl = @streamUrl = null
+
 
   setupWebAudio: ->
     window.AudioContext = window.AudioContext || window.webkitAudioContext
@@ -198,7 +177,6 @@ class Player
       if success
         @streamUrl = streamUrl
         @renderPlayer(true)
-
         callback true
       else
         console.log 'computer says no'
@@ -213,16 +191,13 @@ class Player
       average += parseFloat(array[i])
       i++
 
-
     newAverage = average / array.length
     return (newAverage / 200)
-
 
 
   renderPlayer: (playing) ->
     el = "<audio id='playerElement' preload='none' autoplay='true' src='#{@streamUrl}' ></audio>"
     @playerElement = $(el).appendTo('body')[0]
-
     # wait a bit so things work smoothly
     setTimeout (=>        
         @source = @context.createMediaElementSource(@playerElement)
@@ -300,8 +275,6 @@ class FlappyMusic
       @drawingCanvas.checkCollisions()
 
       @ticker = (@ticker + 1)
-
-
 
 
 $ ->
