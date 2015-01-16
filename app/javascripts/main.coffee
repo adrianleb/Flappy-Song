@@ -151,6 +151,9 @@ class DrawingCanvas
       # alert('game over sucker')
       console.log('game over sucker')
       @parent.runRenderer = false
+      $('.drawed-objects').addClass('pause-animation')
+      $('.game-screen').removeClass('visible-screen')
+      $('.game-over-screen').addClass('visible-screen')
 
 
 
