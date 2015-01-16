@@ -281,6 +281,7 @@ class FlappyMusic
     @firebaseRef = new Firebase('https://flappymusic.firebaseio.com')
     @tracksRef = @firebaseRef.child("tracks")
     @currentTrackRef = null
+    
     @checkRecentlyPlayed()
 
     # @_startGameWithTrack("https://soundcloud.com/oshimakesmusic/i-3-u")
@@ -349,6 +350,12 @@ class FlappyMusic
     $('[data-try-again]').on 'click', (e) =>
       nop e
       window.location.reload()
+    
+    $('[data-new-game]').on 'click', (e) =>
+      nop e
+      console.log 'lalasfsdf'
+      window.location.href = window.location.origin
+
 
     $('[data-startWithTrack]').on 'click', (e) =>
       nop e
