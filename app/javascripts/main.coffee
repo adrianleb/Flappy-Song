@@ -19,6 +19,94 @@ window.MAXTICKERS = 100
 
 window.PIPESPACING = 100
 
+
+class Pipe extends Movable
+  constructor: (@x, @center, @width, @space, @worldHeight, @gameEl) ->
+    # @x = @x - @width / 2
+    lowerPipeHeight = @worldHeight - (@center + @space / 2)
+   
+
+    tmpl = "<div class='drawed-objects pipe' style='transform: translateX(#{@x}px);'>
+          <div class='pipe-upper' style='top: 0; height:#{@center - @space / 2}px;'></div>
+          <div class='pipe-lower' style='top: #{@center + @space / 2}px; height:#{lowerPipeHeight};'></div>
+        </div>"
+
+
+    @pipeEl = $(tmpl).appendTo(@gameEl)[0]
+
+
+
+  hit: (object) ->
+
+
+    birdTop = parseInt(object.y)
+    birdBottom = parseInt(object.lowerBound())
+
+
+    birdLeftSide = object.x
+    birdRightSide = object.rightBound()
+
+
+
+    if birdRightSide in [parseInt(@x)...parseInt(@rightBound())] or birdLeftSide in [parseInt(@x)...parseInt(@rightBound())]
+      @counting ?= setTimeout((()->
+        console.log('will gain a point', parseInt($('#score h1').text()))
+        $('#score h1').text( parseInt($('#score h1').text()) + 1 )
+        ), 100)
+
+      unless birdTop in [parseInt(@topPipeHeight())...parseInt(@upperBound())] or birdBottom in [parseInt(@topPipeHeight())...parseInt(@upperBound())]
+        clearTimeout(@counting)
+        return true
+    return false
+
+
+  topPipeHeight: -> @center - @space / 2
+
+
+  upperBound: -> @center + @space / 2
+
+  rightBound: -> @x + @width
+
+  move: (offset) ->
+
+    @x = @x + offset
+    @pipeEl.style.transform = "translateX(#{@x}px)"
+    # @pipeEl.style.left = "#{@x}px"
+
+
+
+class PipeFactory
+  constructor: (@width, @space) ->
+  getPipe: (x, center) ->
+    new Pipe(x, center, @width, @space)
+
+
+class Bird
+  constructor: (@x, @y, @width, @height, @birdEl, @gravity) ->
+    @speed = 0
+    @birdEl.style.left = "#{@x}px"
+  fall: () ->
+    @y = Math.max(@y - @speed, 0)
+    console.log @speed, @y, "falling"
+
+  setSpeed: (@speed) ->
+  getX: -> @x
+  getY: -> @y
+  rightBound: -> @x + @width
+  lowerBound: -> @y + @height
+  getSpeed: -> @speed
+
+
+  update: (worldHeight) ->
+    @speed = @speed + @gravity
+    @y = Math.max(@y + @speed, -1 * worldHeight + 40)
+    @y = Math.min(@y, worldHeight)
+
+
+    # if @y > 1 then @y = 1
+    @birdEl.style.transform = "translateY(#{@y}px)"
+
+
 class DrawingCanvas
 
   constructor: (parent) ->
@@ -160,14 +248,13 @@ class Player
 
 
 class FlappyMusic
-
   constructor: ->
     @player = new Player()
     @drawingCanvas = new DrawingCanvas(@)
     @runRenderer = true
     @initEvents()
     @ticker = 0
-    @_startGameWithTrack("https://soundcloud.com/otgenasis/coco")
+    @_startGameWithTrack("https://soundcloud.com/oshimakesmusic/i-3-u")
 
   initEvents: ->
     $('[data-startWithTrack]').on 'click', (e) =>
@@ -179,7 +266,6 @@ class FlappyMusic
       if e.keyCode is 32
         @bird.setSpeed(window.BIRDYOFFSET)
 
-        # @game.jump()
 
   _startGameWithTrack: (trackUrl) ->
     $('.game-screen').addClass('visible-screen')
@@ -188,39 +274,26 @@ class FlappyMusic
       if trackSucceded
         @startGame()
         @render()
-        # start playing game, the track has begun playing
+
 
   startGame: () ->
     width = @drawingCanvas.TOTALWIDTH
     height = @drawingCanvas.TOTALHEIGHT
     @bird = new Bird(60, height / 2, 34, 24, $('.bird')[0], window.BIRDGRAVITY)
 
-
   render: =>
     if @runRenderer
-
-      # @game.tick()
-
       if @ticker is window.MAXTICKERS then @ticker = 0 
-
       window.requestAnimationFrame @render
-
       @player.analyser.getByteFrequencyData(@freqByteData)  # this gives us the frequency
       @drawingCanvas.updatePoints()
       @drawingCanvas.updatePipes()
 
-
-
       if @ticker % (window.MAXTICKERS / 10) is 0
         currentLoudnessPercentage = @player.getCurrentLoudnessPercentage()
-
         @drawingCanvas.drawNewPoint(currentLoudnessPercentage)
-
-
         if @ticker % window.MAXTICKERS is 0
           @drawingCanvas.drawNewPipe(currentLoudnessPercentage)
-
-
 
       @bird.update(@drawingCanvas.TOTALHEIGHT)
 
