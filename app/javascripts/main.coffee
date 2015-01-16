@@ -94,6 +94,7 @@ class DrawingCanvas
     @pipes = []
     @runRenderer = true
     @gameEl = $('#game')
+    @bird = new Bird(60, @TOTALHEIGHT / 2, 34, 24, $('.bird')[0], window.BIRDGRAVITY)
 
   initPath: ->
     @$canvas = $('#drawingCanvas')
@@ -213,7 +214,7 @@ class Player
 
 
   initWithSoundcloudId: (id, callback) ->
-    @trackId = id.split('#')[1]
+    @trackId = id
 
     # # console.log id
     @streamUrl = "https://api.soundcloud.com/tracks/#{@trackId}/stream?consumer_key=#{window._SCCK}"
@@ -280,6 +281,7 @@ class FlappyMusic
     @gameStarted = false
     @firebaseRef = new Firebase('https://flappymusic.firebaseio.com')
     @tracksRef = @firebaseRef.child("tracks")
+    # @highscoreRef = @firebaseRef.child("highscores")
     @currentTrackRef = null
     @checkRecentlyPlayed()
 
@@ -332,7 +334,7 @@ class FlappyMusic
 
     $(document).on 'click', "[data-recent-track]", (e) =>
       nop e
-      trackId = e.currentTarget.href
+      trackId = e.currentTarget.href.split('#')[1]
       @_startGameWithTrackId(trackId)
 
 
@@ -351,6 +353,18 @@ class FlappyMusic
       if e.keyCode is 32
         @bird.setSpeed(window.BIRDYOFFSET)
 
+    $('data-publish-highscore').on 'click', (e) =>
+      name = $('#bestScoreName').val()
+
+      scoreData = 
+        name:name
+        score: parseInt($('#score h1').text()
+
+      @currentTrackRef.child('highscores').push scoreData
+
+
+      
+
 
   _startGameWithTrackUrl: (trackUrl) ->
     unless @gameStarted
@@ -360,27 +374,21 @@ class FlappyMusic
       $('.intro-screen').removeClass('visible-screen')
       @player.initWithSoundcloudUrl trackUrl, (trackSucceded) =>
         if trackSucceded
-          @startGame()
           @render()
 
 
   _startGameWithTrackId: (trackId) ->
     unless @gameStarted
+      @currentTrackRef = @tracksRef.child("#{trackId}")
       @gameStarted = true
       # console.log 'started?'
       $('.game-screen').addClass('visible-screen')
       $('.intro-screen').removeClass('visible-screen')
       @player.initWithSoundcloudId trackId, (trackSucceded) =>
         if trackSucceded
-          @startGame()
           @render()
 
 
-
-  startGame: () ->
-    width = @drawingCanvas.TOTALWIDTH
-    height = @drawingCanvas.TOTALHEIGHT
-    @bird = new Bird(60, height / 2, 34, 24, $('.bird')[0], window.BIRDGRAVITY)
 
   render: =>
     # if @runRenderer
