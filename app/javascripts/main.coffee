@@ -27,7 +27,7 @@ class Pipe
 
     @topPipeHeight = parseInt(@center - @space / 2)
     @lowerPipeTop = parseInt(@center + @space / 2)
-   
+
     tmpl = "<div class='drawed-objects pipe' style='transform: translateX(#{@x}px);'>
           <div class='pipe-upper' style='top: 0; height:#{@topPipeHeight}px;'></div>
           <div class='pipe-lower' style='top: #{@lowerPipeTop}px; height:#{lowerPipeHeight};'></div>
@@ -168,7 +168,7 @@ class DrawingCanvas
   checkCollisions: ->
     val = false
     for pipe in @pipes
-      if pipe.hit(@parent.bird)
+      if pipe.hit(@bird)
         val = true
         # console.log 'because pipe'
 
@@ -180,8 +180,7 @@ class DrawingCanvas
       $('.drawed-objects').addClass('pause-animation')
       $('.game-screen').removeClass('visible-screen')
       $('.game-over-screen').addClass('visible-screen')
-
-
+      @parent.showHighscores()
 
 class Player
 
@@ -220,7 +219,7 @@ class Player
     @streamUrl = "https://api.soundcloud.com/tracks/#{@trackId}/stream?consumer_key=#{window._SCCK}"
     @renderPlayer(true)
     callback true
-    
+
 
 
 
@@ -241,7 +240,7 @@ class Player
     el = "<audio id='playerElement' preload='none' autoplay='true' src='#{@streamUrl}' ></audio>"
     @playerElement = $(el).appendTo('body')[0]
     # wait a bit so things work smoothly
-    setTimeout (=>        
+    setTimeout (=>
         @source = @context.createMediaElementSource(@playerElement)
         @source.connect @analyser
     ), 250
@@ -281,12 +280,31 @@ class FlappyMusic
     @gameStarted = false
     @firebaseRef = new Firebase('https://flappymusic.firebaseio.com')
     @tracksRef = @firebaseRef.child("tracks")
-    # @highscoreRef = @firebaseRef.child("highscores")
     @currentTrackRef = null
     @checkRecentlyPlayed()
 
     # @_startGameWithTrack("https://soundcloud.com/oshimakesmusic/i-3-u")
 
+  showHighscores: () ->
+    @currentTrackRef
+    .child("highscores")
+    .once 'value', (snapshot) ->
+      console.log sortObjectByProperty('score', snapshot.val())
+      # scores = sortBy(snapshot.val(), (score) -> score.score)
+      for k, v of snapshot.val()
+        console.log k, v
+      # tmpl = ''
+      # for score in scores
+      #   score = snapshot.val()[i]
+      #   tmpl += "<li><h4>#{score.name} <span>#{score.score}</span></h4></li>"
+
+      # $('#highscores').append tmpl
+
+
+
+
+
+    # @currentTrackRef.child("highscores").orderByChild "value", (snapshot) ->
 
 
   checkRecentlyPlayed: ->
@@ -310,7 +328,7 @@ class FlappyMusic
   saveTrackIfNewElseCountPlay: (track) ->
 
 
-    trackInfo = 
+    trackInfo =
       url:track.permalink_url
       username:track.user.username
       artwork: track.artwork_url
@@ -351,19 +369,20 @@ class FlappyMusic
 
     $(document).on 'keydown', (e) =>
       if e.keyCode is 32
-        @bird.setSpeed(window.BIRDYOFFSET)
+        @drawingCanvas.bird.setSpeed(window.BIRDYOFFSET)
 
-    $('data-publish-highscore').on 'click', (e) =>
+    $('[data-publish-highscore]').on 'click', (e) =>
+      nop e
       name = $('#bestScoreName').val()
-
-      scoreData = 
-        name:name
-        score: parseInt($('#score h1').text()
-
+      scoreData =
+        name: name
+        score: parseInt($('#score h1').text())
+      console.log scoreData
       @currentTrackRef.child('highscores').push scoreData
+      $('[data-publish-highscore]').parent().remove()
 
 
-      
+
 
 
   _startGameWithTrackUrl: (trackUrl) ->
@@ -387,6 +406,7 @@ class FlappyMusic
       @player.initWithSoundcloudId trackId, (trackSucceded) =>
         if trackSucceded
           @render()
+          @showHighscores()
 
 
 
@@ -396,7 +416,7 @@ class FlappyMusic
 
   handleRender: =>
     if @runRenderer
-      if @ticker is window.MAXTICKERS then @ticker = 0 
+      if @ticker is window.MAXTICKERS then @ticker = 0
       # window.requestAnimationFrame @render
       @player.analyser.getByteFrequencyData(@freqByteData)  # this gives us the frequency
       @drawingCanvas.updatePoints()
@@ -410,7 +430,7 @@ class FlappyMusic
         if @ticker % window.MAXTICKERS is 0
           @drawingCanvas.drawNewPipe(currentLoudnessPercentage)
 
-      @bird.update(@drawingCanvas.TOTALHEIGHT)
+      @drawingCanvas.bird.update(@drawingCanvas.TOTALHEIGHT)
 
       @drawingCanvas.checkCollisions()
 
