@@ -23,10 +23,14 @@ window.PIPESPACING = 100
 class Pipe
   constructor: (@x, @center, @width, @space, @worldHeight, @gameEl) ->
     lowerPipeHeight = @worldHeight - (@center + @space / 2)
+
+
+    @topPipeHeight = parseInt(@center - @space / 2)
+    @lowerPipeTop = parseInt(@center + @space / 2)
    
     tmpl = "<div class='drawed-objects pipe' style='transform: translateX(#{@x}px);'>
-          <div class='pipe-upper' style='top: 0; height:#{@center - @space / 2}px;'></div>
-          <div class='pipe-lower' style='top: #{@center + @space / 2}px; height:#{lowerPipeHeight};'></div>
+          <div class='pipe-upper' style='top: 0; height:#{@topPipeHeight}px;'></div>
+          <div class='pipe-lower' style='top: #{@lowerPipeTop}px; height:#{lowerPipeHeight};'></div>
         </div>"
 
     @pipeEl = $(tmpl).appendTo(@gameEl)[0]
@@ -34,33 +38,25 @@ class Pipe
 
 
   hit: (object) ->
-
-
+    console.log('hitting')
     birdTop = parseInt(object.y)
     birdBottom = parseInt(object.lowerBound())
-
-
     birdLeftSide = object.x
     birdRightSide = object.rightBound()
 
-
-
-    if birdRightSide in [parseInt(@x)...parseInt(@rightBound())] or birdLeftSide in [parseInt(@x)...parseInt(@rightBound())]
+    x = parseInt(@x)
+    rightBound = parseInt(@rightBound())
+    if birdRightSide in [x...rightBound] or birdLeftSide in [x...rightBound]
       @counting ?= setTimeout((()->
         console.log('will gain a point', parseInt($('#score h1').text()))
         $('#score h1').text( parseInt($('#score h1').text()) + 1 )
-        ), 100)
+        ), 500)
 
-      unless birdTop in [parseInt(@topPipeHeight())...parseInt(@upperBound())] or birdBottom in [parseInt(@topPipeHeight())...parseInt(@upperBound())]
+      unless birdTop in [@topPipeHeight...@lowerPipeTop] and birdBottom in [@topPipeHeight...@lowerPipeTop]
         clearTimeout(@counting)
+        console.log(this, birdTop, birdBottom, birdLeftSide, birdRightSide)
         return true
     return false
-
-
-  topPipeHeight: -> @center - @space / 2
-
-
-  upperBound: -> @center + @space / 2
 
   rightBound: -> @x + @width
 
@@ -75,10 +71,6 @@ class Bird
     @speed = 0
     @birdEl.style.left = "#{@x}px"
 
-  fall: () ->
-    @y = Math.max(@y - @speed, 0)
-    console.log @speed, @y, "falling"
-
   setSpeed: (@speed) ->
   getX: -> @x
   getY: -> @y
@@ -90,8 +82,8 @@ class Bird
   update: (worldHeight) ->
     @speed = @speed + @gravity
     @y = Math.max(@y + @speed, -1 * worldHeight + 40)
-    @y = Math.min(@y, worldHeight)
-    @birdEl.style.transform = "translateY(#{@y}px)"
+    @y = Math.min(@y, worldHeight - @height)
+    @birdEl.style.transform = "translateY(#{@y+@height}px)"
 
 
 class DrawingCanvas
@@ -125,7 +117,7 @@ class DrawingCanvas
 
 
   drawNewPipe: (currentLoudnessPercentage) ->
-    @pipes.push new Pipe(@xPos, @TOTALHEIGHT - (@TOTALHEIGHT * currentLoudnessPercentage), 20, window.PIPESPACING, @TOTALHEIGHT, @gameEl)
+    @pipes.push new Pipe(@xPos, @TOTALHEIGHT - (@TOTALHEIGHT * currentLoudnessPercentage), 52, window.PIPESPACING, @TOTALHEIGHT, @gameEl)
 
 
   updatePipes: ->

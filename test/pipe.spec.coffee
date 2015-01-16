@@ -19,5 +19,5 @@ describe 'pipes', () ->
       getX: -> x
       getY: -> y
       rightBound: -> right
-      upperBound: -> top
+      lowerPipeTop: -> top
     }

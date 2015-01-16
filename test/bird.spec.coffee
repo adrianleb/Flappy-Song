@@ -23,4 +23,4 @@ describe 'Flappy bird', () ->
     expect(bird.getX()).toBe(0)
     expect(bird.getY()).toBe(15)
     expect(bird.rightBound()).toBe(10)
-    expect(bird.upperBound()).toBe(30)
+    expect(bird.lowerPipeTop()).toBe(30)
