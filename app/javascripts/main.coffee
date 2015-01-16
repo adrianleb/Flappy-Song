@@ -281,7 +281,7 @@ class FlappyMusic
     @firebaseRef = new Firebase('https://flappymusic.firebaseio.com')
     @tracksRef = @firebaseRef.child("tracks")
     @currentTrackRef = null
-    
+
     @checkRecentlyPlayed()
 
     # @_startGameWithTrack("https://soundcloud.com/oshimakesmusic/i-3-u")
@@ -296,7 +296,7 @@ class FlappyMusic
       for k, v of snapshot.val()
         tmpl += "<li><h4>#{v.name} <span>#{v.score}</span></h4></li>"
 
-      $('#highscores').append tmpl
+      $('.highscores').append tmpl
 
   checkRecentlyPlayed: ->
     # console.log 'gonna get recent'
@@ -350,7 +350,7 @@ class FlappyMusic
     $('[data-try-again]').on 'click', (e) =>
       nop e
       window.location.reload()
-    
+
     $('[data-new-game]').on 'click', (e) =>
       nop e
       console.log 'lalasfsdf'
