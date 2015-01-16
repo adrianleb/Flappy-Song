@@ -288,24 +288,14 @@ class FlappyMusic
   showHighscores: () ->
     @currentTrackRef
     .child("highscores")
+    .orderByChild('score')
+    .limitToLast(3)
     .once 'value', (snapshot) ->
-      console.log sortObjectByProperty('score', snapshot.val())
-      # scores = sortBy(snapshot.val(), (score) -> score.score)
+      tmpl = ''
       for k, v of snapshot.val()
-        console.log k, v
-      # tmpl = ''
-      # for score in scores
-      #   score = snapshot.val()[i]
-      #   tmpl += "<li><h4>#{score.name} <span>#{score.score}</span></h4></li>"
+        tmpl += "<li><h4>#{v.name} <span>#{v.score}</span></h4></li>"
 
-      # $('#highscores').append tmpl
-
-
-
-
-
-    # @currentTrackRef.child("highscores").orderByChild "value", (snapshot) ->
-
+      $('#highscores').append tmpl
 
   checkRecentlyPlayed: ->
     # console.log 'gonna get recent'
@@ -374,6 +364,8 @@ class FlappyMusic
     $('[data-publish-highscore]').on 'click', (e) =>
       nop e
       name = $('#bestScoreName').val()
+      unless (name.length > 0)
+        return
       scoreData =
         name: name
         score: parseInt($('#score h1').text())
@@ -406,7 +398,6 @@ class FlappyMusic
       @player.initWithSoundcloudId trackId, (trackSucceded) =>
         if trackSucceded
           @render()
-          @showHighscores()
 
 
 
