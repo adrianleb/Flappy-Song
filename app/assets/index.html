@@ -14,11 +14,20 @@
 	<section id="intro" class="screen intro-screen visible-screen">
 		<div class="centered-content">
 			
-			<h1>Input an Url from Soundcloud to begin</h1>
+			<h1>Flappy Music</h1>
+
+      <h3>Input a Soundcloud URL to start playing.</h3>
 			<form action="">
 				<input type="text" id="trackUrlField">
 				<button data-startWithTrack>Play</button>
 			</form>
+
+      <div class="recently-played">
+        <h4>Recently Played</h4>
+        <ul id="recentlyPlayedTracks" class="recently-played-tracks">
+          
+        </ul>
+      </div>
 		</div>
 
 	</section>
@@ -40,10 +49,10 @@
   <section id="gameOver" class="screen game-over-screen">
     <div class="centered-content">
       <h1>Game Over</h1>
-      <button>Try Again</button>
+      <button data-try-again>Try Again</button>
     </div>
   </section>
-
+  <script src="https://cdn.firebase.com/js/client/2.1.1/firebase.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/paper.js/0.9.18/paper-full.js"></script>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
   <script src="/javascripts/app.js"></script>

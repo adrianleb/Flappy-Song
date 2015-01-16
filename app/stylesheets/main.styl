@@ -85,20 +85,26 @@ html, body {
 .visible-screen {
   opacity 1 !important
   pointer-events auto !important
-  z-index 2
+  z-index 50 !important
   
 }
 
 
-.game-over-screen
+// .game-over-screen
+//   opacity 0
+//   pointer-events none
+  
+.intro-screen, .game-over-screen
+  top 6rem
+  z-index 3
   opacity 0
   pointer-events none
-.intro-screen, .game-over-screen
-  top 10rem
-  
   h1 
     color lightgreen
+    
     text-shadow: -1px 0 black, 0 2px black, 2px 0 black, 0 -1px black;
+    
+    margin-bottom 6rem
 
 
 
@@ -157,7 +163,7 @@ canvas
   width: 100%
   background-image: url('../images/ceiling.png')
   background-repeat: repeat-x
-  -webkit-animation: animCeiling 500ms linear infinite
+  // -webkit-animation: animCeiling 500ms linear infinite
   z-index 13
    // animation: animCeiling 481ms linear infinite;
 
@@ -171,7 +177,7 @@ canvas
    background-repeat: repeat-x;
    background-position: 0px 0px;
    background-color: #ded895;
-   -webkit-animation: animLand 2500ms linear infinite;
+   // -webkit-animation: animLand 2500ms linear infinite;
    
 
 .bird
@@ -196,7 +202,7 @@ canvas
   background-repeat: repeat-x;
   background-position: 0px 100%;
   background-color: #4ec0ca;   
-  -webkit-animation: animSky 7s linear infinite;
+  // -webkit-animation: animSky 7s linear infinite;
   
 .pipe
   position: absolute;
@@ -260,4 +266,37 @@ canvas
 .pause-animation
     -webkit-animation-play-state: paused; /* Chrome, Safari, Opera */
     animation-play-state: paused;
+    
+
+.recently-played
+  opacity 0
+  &.visible
+    opacity 1
+.recently-played-tracks
+  text-align left
+  
+  &, li
+    list-style none
+
+  li
+    margin-bottom 2rem
+    
+  a
+    display block
+    color black
+    width 100%
+  div
+    width 4.8rem
+    height 4.8rem
+    background-size cover
+    display inline-block
+    margin-right 2rem
+    vertical-align top
+  h4
+    display inline-block
+    vertical-align top
+    line-height 0.5
+    
+  span
+    opacity 0.7
     

@@ -11,12 +11,12 @@ window.nop = (e) ->
 
 # how much should the path move at every tick?
 window.PATHXOFFSET = -3.3
-
-window.BIRDYOFFSET = -10
-window.BIRDGRAVITY = 1
-
+window.FLOORXOFFSET = -3.3
+window.SKYXOFFSET = -1.3
+window.CEILINGXOFFSET = -3.3
+window.BIRDYOFFSET = -12
+window.BIRDGRAVITY = 1.2
 window.MAXTICKERS = 100
-
 window.PIPESPACING = 100
 
 
@@ -38,7 +38,7 @@ class Pipe
 
 
   hit: (object) ->
-    console.log('hitting')
+    # console.log('hitting')
     birdTop = parseInt(object.y)
     birdBottom = parseInt(object.lowerBound())
     birdLeftSide = object.x
@@ -48,13 +48,13 @@ class Pipe
     rightBound = parseInt(@rightBound())
     if birdRightSide in [x...rightBound] or birdLeftSide in [x...rightBound]
       @counting ?= setTimeout((()->
-        console.log('will gain a point', parseInt($('#score h1').text()))
+        # console.log('will gain a point', parseInt($('#score h1').text()))
         $('#score h1').text( parseInt($('#score h1').text()) + 1 )
         ), 500)
 
       unless birdTop in [@topPipeHeight...@lowerPipeTop] and birdBottom in [@topPipeHeight...@lowerPipeTop]
         clearTimeout(@counting)
-        console.log(this, birdTop, birdBottom, birdLeftSide, birdRightSide)
+        # console.log(this, birdTop, birdBottom, birdLeftSide, birdRightSide)
         return true
     return false
 
@@ -101,24 +101,44 @@ class DrawingCanvas
     # @bg.fillColor = 'white'
     @path = new paper.Path()
     @path.closed = false
-    @path.strokeColor = 'black'
-    @path.strokeWidth = 1
+    @path.strokeColor = new paper.Color(0, 1, 0, 0.4)
+    @path.strokeWidth = 3
+    @path.strokeCap = 'round'
     @TOTALWIDTH = paper.view.size.width
     @TOTALHEIGHT = paper.view.size.height
-    @xPos = (@TOTALWIDTH/1.1)
+    @xPos = (@TOTALWIDTH/0.95)
     @yPos = (@TOTALHEIGHT/2)
     paper.view.draw()
+    @floorEl = $('.floor')[0]
+    @skyEl = $('.sky')[0]
+    @ceilingEl = $('.ceiling')[0]
+
+    @currentFloorOffset = @currentSkyOffset = @currentCeilingOffset = 0
+
+
 
 
   drawNewPoint: (currentLoudnessPercentage) ->
     point = new paper.Point @xPos, @TOTALHEIGHT - (@TOTALHEIGHT * currentLoudnessPercentage)
     @path.add point
+    @path.smooth()
     paper.view.draw()
 
 
   drawNewPipe: (currentLoudnessPercentage) ->
     @pipes.push new Pipe(@xPos, @TOTALHEIGHT - (@TOTALHEIGHT * currentLoudnessPercentage), 52, window.PIPESPACING, @TOTALHEIGHT, @gameEl)
 
+
+
+  updateWorld: ->
+    @currentFloorOffset = @currentFloorOffset + window.FLOORXOFFSET
+    @floorEl.style.backgroundPosition = "#{@currentFloorOffset}px 0"
+
+    @currentSkyOffset = @currentSkyOffset + window.SKYXOFFSET
+    @skyEl.style.backgroundPosition = "#{@currentSkyOffset}px 100%"
+
+    @currentCeilingOffset = @currentCeilingOffset + window.CEILINGXOFFSET
+    @ceilingEl.style.backgroundPosition = "#{@currentCeilingOffset}px, 0"
 
   updatePipes: ->
     for pipe in @pipes
@@ -129,19 +149,32 @@ class DrawingCanvas
     for point in @path.segments
       thisX = point.point.x
       point.point.x = point.point.x + window.PATHXOFFSET
+
+
+    chance = Math.random()
+    multiplier = 1
+
+    if chance > 0.5
+      multiplier = -1
+
     paper.view.draw()
 
+
+
+  updateStrokeColor: ->
+    @path.strokeColor.hue = (@path.strokeColor.hue + 1)
 
   checkCollisions: ->
     val = false
     for pipe in @pipes
       if pipe.hit(@parent.bird)
         val = true
-        console.log 'because pipe'
+        # console.log 'because pipe'
 
     if val
       # alert('game over sucker')
-      console.log('game over sucker')
+      # console.log('game over sucker')
+
       @parent.runRenderer = false
       $('.drawed-objects').addClass('pause-animation')
       $('.game-screen').removeClass('visible-screen')
@@ -151,10 +184,11 @@ class DrawingCanvas
 
 class Player
 
-  constructor: ->
+  constructor: (parent)->
     @setupWebAudio()
     @playing = false
     @trackUrl = @streamUrl = null
+    @parent = parent
 
 
   setupWebAudio: ->
@@ -174,7 +208,19 @@ class Player
         @renderPlayer(true)
         callback true
       else
-        console.log 'computer says no'
+        # console.log 'computer says no'
+
+
+
+  initWithSoundcloudId: (id, callback) ->
+    @trackId = id.split('#')[1]
+
+    # # console.log id
+    @streamUrl = "https://api.soundcloud.com/tracks/#{@trackId}/stream?consumer_key=#{window._SCCK}"
+    @renderPlayer(true)
+    callback true
+    
+
 
 
   getCurrentLoudnessPercentage: ->
@@ -207,9 +253,16 @@ class Player
       dataType: "json"
       success: (track) =>
         if track.streamable
+
+
+          # check if this is on firebase already, if not save it there
+
+
+          # console.log track
           url = track.stream_url
           url += if (url.indexOf("?") > 0) then "&" else "?"
           url += "consumer_key=#{window._SCCK}"
+          @parent.saveTrackIfNewElseCountPlay(track)
           callback true, url
         else
           callback false, null
@@ -219,29 +272,90 @@ class Player
 
 class FlappyMusic
   constructor: ->
-    @player = new Player()
+    @player = new Player(@)
     @drawingCanvas = new DrawingCanvas(@)
     @runRenderer = true
     @initEvents()
     @ticker = 0
     @gameStarted = false
+    @firebaseRef = new Firebase('https://flappymusic.firebaseio.com')
+    @tracksRef = @firebaseRef.child("tracks")
+    @currentTrackRef = null
+    @checkRecentlyPlayed()
+
     # @_startGameWithTrack("https://soundcloud.com/oshimakesmusic/i-3-u")
 
+
+
+  checkRecentlyPlayed: ->
+    # console.log 'gonna get recent'
+    tmpl = ""
+    @tracksRef.once "value", (snapshot) =>
+      # console.log snapshot.val()
+
+
+      for k,v of snapshot.val()
+        # console.log k, v
+
+        tmpl += "<li> <a href='##{k}' data-recent-track><div style='background-image:url(#{v.artwork});'></div><h4>#{v.title} <span>by #{v.username}</span></h4> </a></li>"
+
+
+
+      if tmpl.length
+        $('#recentlyPlayedTracks').append tmpl
+        $('.recently-played').addClass 'visible'
+
+  saveTrackIfNewElseCountPlay: (track) ->
+
+
+    trackInfo = 
+      url:track.permalink_url
+      username:track.user.username
+      artwork: track.artwork_url
+      title:track.title
+      uri: track.uri
+      plays: 1
+
+    @tracksRef.once "value", (snapshot) =>
+
+      # console.log track.id, snapshot
+      unless snapshot.hasChild("#{track.id}")
+        @tracksRef.child("#{track.id}").set trackInfo
+      else
+        # console.log "That track already exists"
+
+      @currentTrackRef = @tracksRef.child("#{track.id}")
+      return
+
+
   initEvents: ->
+
+    $(document).on 'click', "[data-recent-track]", (e) =>
+      nop e
+      trackId = e.currentTarget.href
+      @_startGameWithTrackId(trackId)
+
+
+    $('[data-try-again]').on 'click', (e) =>
+      nop e
+      window.location.reload()
+
     $('[data-startWithTrack]').on 'click', (e) =>
       nop e
       trackUrl = $('#trackUrlField').val()
-      @_startGameWithTrack(trackUrl)
+      if trackUrl.length <= 0
+        return
+      @_startGameWithTrackUrl(trackUrl)
 
     $(document).on 'keydown', (e) =>
       if e.keyCode is 32
         @bird.setSpeed(window.BIRDYOFFSET)
 
 
-  _startGameWithTrack: (trackUrl) ->
+  _startGameWithTrackUrl: (trackUrl) ->
     unless @gameStarted
       @gameStarted = true
-      console.log 'started?'
+      # console.log 'started?'
       $('.game-screen').addClass('visible-screen')
       $('.intro-screen').removeClass('visible-screen')
       @player.initWithSoundcloudUrl trackUrl, (trackSucceded) =>
@@ -250,22 +364,41 @@ class FlappyMusic
           @render()
 
 
+  _startGameWithTrackId: (trackId) ->
+    unless @gameStarted
+      @gameStarted = true
+      # console.log 'started?'
+      $('.game-screen').addClass('visible-screen')
+      $('.intro-screen').removeClass('visible-screen')
+      @player.initWithSoundcloudId trackId, (trackSucceded) =>
+        if trackSucceded
+          @startGame()
+          @render()
+
+
+
   startGame: () ->
     width = @drawingCanvas.TOTALWIDTH
     height = @drawingCanvas.TOTALHEIGHT
     @bird = new Bird(60, height / 2, 34, 24, $('.bird')[0], window.BIRDGRAVITY)
 
   render: =>
+    # if @runRenderer
+    limitLoop(@handleRender, 45)
+
+  handleRender: =>
     if @runRenderer
       if @ticker is window.MAXTICKERS then @ticker = 0 
-      window.requestAnimationFrame @render
+      # window.requestAnimationFrame @render
       @player.analyser.getByteFrequencyData(@freqByteData)  # this gives us the frequency
       @drawingCanvas.updatePoints()
       @drawingCanvas.updatePipes()
+      @drawingCanvas.updateWorld()
 
       if @ticker % (window.MAXTICKERS / 10) is 0
         currentLoudnessPercentage = @player.getCurrentLoudnessPercentage()
         @drawingCanvas.drawNewPoint(currentLoudnessPercentage)
+        @drawingCanvas.updateStrokeColor()
         if @ticker % window.MAXTICKERS is 0
           @drawingCanvas.drawNewPipe(currentLoudnessPercentage)
 
